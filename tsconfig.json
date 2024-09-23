@@ -1,0 +1,25 @@
+{
+  "exclude": [
+    "node_modules",
+    "dist",
+    "src/**/*.test.ts"
+  ],
+  "include": [
+    "src/**/*"
+  ],
+  "compilerOptions": {
+    "types": [
+      "node",
+      "express"
+    ],
+    "target": "es2016",
+    "module": "commonjs",
+    "moduleResolution": "Node",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "skipLibCheck": true,
+    "outDir": "./dist"
+  }
+}
