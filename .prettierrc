@@ -10,6 +10,7 @@
   "tabWidth": 2,
   "useTabs": true,
   "endOfLine": "auto",
+  "trailingComma": "all",
   "overrides": [
     {
       "files": ".prettierrc",

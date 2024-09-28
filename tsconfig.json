@@ -29,6 +29,18 @@
     "typeRoots": [
       "node_modules/@types/",
       "./src/types/index.d.ts"
-    ]
+    ],
+    "baseUrl": "./src",
+    "paths": {
+      "@lib/*": [
+        "./lib/*"
+      ],
+      "@schemas/*": [
+        "./schemas/*"
+      ],
+      "@constants": [
+        "./lib/constants.ts"
+      ]
+    }
   }
 }

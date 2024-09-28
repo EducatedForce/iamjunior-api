@@ -13,7 +13,9 @@
   "dependencies": {
     "@typescript-eslint/eslint-plugin": "^8.7.0",
     "dotenv": "^16.4.5",
-    "express": "^4.21.0"
+    "express": "^4.21.0",
+    "joi": "^17.13.3",
+    "module-alias": "^2.2.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.11.0",
@@ -28,5 +30,10 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.6.2",
     "typescript-eslint": "^8.7.0"
+  },
+  "_moduleAliases": {
+    "@lib": "./src/lib",
+    "@schemas": "./src/schemas",
+    "@constants": "./src/lib/constants.ts"
   }
 }

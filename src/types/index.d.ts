@@ -6,20 +6,20 @@ interface Category {
 }
 
 interface Business {
-	id: string;
+	id: number;
 	name: string;
 	description: string;
 	address: string;
 	category: string;
 	contactPerson: string;
 	email: string;
-	images: string[];
+	images: { url: string }[];
 }
 
 interface Booking {
-	id: string;
-	businessId: string;
-	date: string;
+	id: number;
+	businessId: number;
+	date: Date;
 	time: string;
 	userEmail: string;
 	userName: string;
