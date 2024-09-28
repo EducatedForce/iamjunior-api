@@ -5,8 +5,13 @@
     "src/**/*.test.ts"
   ],
   "include": [
-    "src/**/*"
+    "src/**/*",
+    "src/types/index.d.ts"
   ],
+  "ts-node": {
+    "files": true,
+    "transpileOnly": true
+  },
   "compilerOptions": {
     "types": [
       "node",
@@ -20,6 +25,22 @@
     "strict": true,
     "strictNullChecks": true,
     "skipLibCheck": true,
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "typeRoots": [
+      "node_modules/@types/",
+      "./src/types/index.d.ts"
+    ],
+    "baseUrl": "./src",
+    "paths": {
+      "@lib/*": [
+        "./lib/*"
+      ],
+      "@schemas/*": [
+        "./schemas/*"
+      ],
+      "@constants": [
+        "./lib/constants.ts"
+      ]
+    }
   }
 }
