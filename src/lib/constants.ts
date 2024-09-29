@@ -31,7 +31,7 @@ export const ROUTES = {
 		bookings: {
 			root: {
 				path: "/bookings",
-				methods: ["POST"],
+				methods: ["GET", "POST"],
 				subRoutes: {
 					user: {
 						path: "/user/:email",
@@ -46,3 +46,13 @@ export const ROUTES = {
 		},
 	},
 };
+
+export const EMAIL_REGEX = new RegExp(
+	"^\\w+([.-]?\\w+)*@\\w+([.-]?\\w+)*(\\.\\w{2,3})+$",
+);
+
+export const DATE_REGEX = new RegExp(
+	"^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])$",
+);
+
+export const TIME_REGEX = new RegExp("^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$");

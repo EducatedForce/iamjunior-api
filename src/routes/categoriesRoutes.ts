@@ -1,5 +1,5 @@
 import { Request, Response, Router } from "express";
-import { schemaValidator } from "@lib/schemaValidator";
+import { schemaValidator } from "@middleware/schemaValidator";
 import { categories } from "@lib/data";
 import { ROUTES } from "@constants";
 
@@ -8,7 +8,7 @@ export const categoriesRoutes = Router();
 const { path: rootPath, methods } = ROUTES.routes.categories.root;
 
 categoriesRoutes.get(rootPath, (_req: Request, res: Response) => {
-	res.status(200).json(categories);
+	res.status(200).send(categories);
 });
 
 categoriesRoutes.post(
@@ -20,6 +20,6 @@ categoriesRoutes.post(
 			...req.body,
 		};
 		categories.push(newCategory);
-		res.status(201).json(newCategory);
+		res.status(201).send(newCategory);
 	},
 );

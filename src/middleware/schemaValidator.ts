@@ -39,7 +39,7 @@ export const schemaValidator = (
 	return (req, res, next) => {
 		const method = req.method;
 
-		if (!supportedMethods.includes(method)) {
+		if (method === "GET" || !supportedMethods.includes(method)) {
 			return next();
 		}
 

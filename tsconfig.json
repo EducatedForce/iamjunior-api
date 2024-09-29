@@ -38,6 +38,9 @@
       "@schemas/*": [
         "./schemas/*"
       ],
+      "@middleware/*": [
+        "./middleware/*"
+      ],
       "@constants": [
         "./lib/constants.ts"
       ]

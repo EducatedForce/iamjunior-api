@@ -15,7 +15,8 @@
     "dotenv": "^16.4.5",
     "express": "^4.21.0",
     "joi": "^17.13.3",
-    "module-alias": "^2.2.3"
+    "module-alias": "^2.2.3",
+    "mongoose": "^8.7.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.11.0",
@@ -34,6 +35,7 @@
   "_moduleAliases": {
     "@lib": "./src/lib",
     "@schemas": "./src/schemas",
+    "@middleware": "./src/middleware",
     "@constants": "./src/lib/constants.ts"
   }
 }

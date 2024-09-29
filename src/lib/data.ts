@@ -182,7 +182,7 @@ export const bookings: Booking[] = [
 	{
 		id: 4,
 		businessId: 4,
-		date: new Date("2024-04-17 12:40"),
+		date: new Date("2024-04-17T12:40"),
 		time: "12:40",
 		userEmail: "nbottelstone3@intel.com",
 		userName: "hdenisyev3",
@@ -200,7 +200,7 @@ export const bookings: Booking[] = [
 	{
 		id: 6,
 		businessId: 6,
-		date: new Date("2024-04-16T11:36"),
+		date: new Date("2024-09-30T11:36"),
 		time: "11:36",
 		userEmail: "djacqueme5@nifty.com",
 		userName: "lworledge5",
