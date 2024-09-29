@@ -23,7 +23,7 @@ const businessSchema = Joi.object().keys({
 });
 
 const bookingSchema = Joi.object().keys({
-	businessId: Joi.number().integer().required(),
+	businessId: Joi.string().required(),
 	date: Joi.date().required(),
 	time: Joi.string().pattern(TIME_REGEX).required(),
 	userEmail: Joi.string().email().required(),

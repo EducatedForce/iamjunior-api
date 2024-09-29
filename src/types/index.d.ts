@@ -1,12 +1,12 @@
 interface Category {
-	id: number;
+	id: string | number;
 	name: string;
 	backgroundColor: string;
 	iconUrl: string;
 }
 
 interface Business {
-	id: number;
+	id: string | number;
 	name: string;
 	description: string;
 	address: string;
@@ -17,7 +17,7 @@ interface Business {
 }
 
 interface Booking {
-	id: number;
+	id: string | number;
 	businessId: number;
 	date: Date;
 	time: string;

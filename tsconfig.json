@@ -41,6 +41,9 @@
       "@middleware/*": [
         "./middleware/*"
       ],
+      "@models/*": [
+        "./models/*"
+      ],
       "@constants": [
         "./lib/constants.ts"
       ]

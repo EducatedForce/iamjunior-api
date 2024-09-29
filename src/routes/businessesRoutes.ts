@@ -1,10 +1,11 @@
 import { Request, Response, Router } from "express";
-import { bookings, businesses } from "@lib/data";
-import { slugify } from "@lib/slugify";
-import { deSlugify } from "@lib/deSlugify";
+import mongoose from "mongoose";
 import { DATE_REGEX, ROUTES } from "@constants";
+import { deSlugify } from "@lib/deSlugify";
 import { schemaValidator } from "@middleware/schemaValidator";
-import { getObjectById } from "@lib/getObjectById";
+import { Business } from "@models/Business";
+import { Category } from "@models/Category";
+import { Booking } from "@models/Bookings";
 
 export const businessesRoutes = Router();
 
@@ -14,43 +15,89 @@ const { path: idPath, methods: idMethods } =
 	ROUTES.routes.businesses.root.subRoutes.id;
 const { path: bookingsPath } = ROUTES.routes.businesses.root.subRoutes.bookings;
 
-// Get all businesses
-businessesRoutes.get(rootPath, (_req: Request, res: Response) => {
-	if (businesses.length > 0) {
-		res.status(200).send(businesses);
-	} else {
-		res.status(404).send("No businesses in database");
-	}
-});
-
-// Create new business
-businessesRoutes.post(
+// Get all businesses or add new business
+businessesRoutes.all(
 	rootPath,
 	schemaValidator(rootPath, rootMethods),
-	(req: Request, res: Response) => {
-		const newBusinessEntity: Business = {
-			id: businesses.length + 1,
-			...req.body,
-		};
-		businesses.push(newBusinessEntity);
-		res.status(201).send(newBusinessEntity);
+	async (req: Request, res: Response) => {
+		//Return 405 if method is not in allowed methods
+		if (!rootMethods.includes(req.method)) {
+			return res.status(405).send("Method not allowed");
+		}
+
+		//Depending on request method display all businesses or create new one in DB
+		switch (req.method) {
+			case "GET":
+				try {
+					const businesses = await Business.find();
+					if (businesses.length > 0) {
+						return res.status(200).send(businesses);
+					}
+					return res.status(404).send("No businesses found in database");
+				} catch (err) {
+					return res.status(400).send(err);
+				}
+			case "POST": {
+				try {
+					const categoryInDB = await Category.findOne({
+						name: {
+							$regex: new RegExp(`^${req.body.category}$`),
+							$options: "i",
+						},
+					});
+					if (!categoryInDB) {
+						return res
+							.status(400)
+							.send(
+								`Cannot create a business as there is no category ${req.body.category} in the database`,
+							);
+					}
+					const newBusiness = new Business({
+						...req.body,
+						category: categoryInDB._id,
+					});
+					try {
+						const savedBusiness = await newBusiness.save();
+						return res.status(201).send(savedBusiness);
+					} catch (err) {
+						return res.status(400).send(err);
+					}
+				} catch (err) {
+					return res.status(400).send(err);
+				}
+			}
+		}
 	},
 );
 
 // Get businesses with certain category
 businessesRoutes.get(
 	`${rootPath}${categoryPath}`,
-	(req: Request, res: Response) => {
+	async (req: Request, res: Response) => {
 		const { category } = req.params;
-		const businessesToDisplay = businesses.filter(
-			(business) => slugify(business.category) === category,
-		);
-		if (businessesToDisplay.length > 0) {
-			res.status(200).send(businessesToDisplay);
-		} else {
-			res
-				.status(404)
-				.send(`No businesses found in category ${deSlugify(category)}`);
+		try {
+			const categoryInDb = await Category.findOne({
+				name: { $regex: new RegExp(`^${deSlugify(category)}$`), $options: "i" },
+			});
+			try {
+				const businessesInDb = await Business.find({
+					category: categoryInDb?._id,
+				});
+				if (businessesInDb.length > 0) {
+					return res.status(200).send({
+						category: categoryInDb?.name,
+						businesses: businessesInDb,
+					});
+				} else {
+					return res
+						.status(404)
+						.send(`No businesses found in category: ${deSlugify(category)}`);
+				}
+			} catch (err) {
+				return res.status(400).send(err);
+			}
+		} catch (err) {
+			return res.status(400).send(err);
 		}
 	},
 );
@@ -59,44 +106,42 @@ businessesRoutes.get(
 businessesRoutes.all(
 	`${rootPath}${idPath}`,
 	schemaValidator(`${rootPath}${idPath}`, idMethods),
-	(req: Request, res: Response) => {
-		const bId = Number(req.params.id);
-
-		if (isNaN(bId)) {
-			return res
-				.status(404)
-				.send(`No business found with id: ${req.params.id}`);
+	async (req: Request, res: Response) => {
+		//Return 405 if method is not in allowed methods
+		if (!idMethods.includes(req.method)) {
+			return res.status(405).send("Method not allowed");
 		}
 
-		const { record: businessToDisplay, recordIndex: businessIndexToUpdate } =
-			getObjectById(bId, businesses);
-
-		if (!businessToDisplay) {
-			return res
-				.status(404)
-				.send(`No business found with id: ${req.params.id}`);
+		const bId = req.params.id;
+		const validId = mongoose.Types.ObjectId.isValid(bId);
+		if (!validId) {
+			return res.status(404).send(`No business with ID:${bId} found in DB`);
 		}
-
 		//Depending on request method display business or update it
 		switch (req.method) {
 			case "GET":
-				return res.status(200).send(businessToDisplay);
-			case "PUT":
-				if (businessIndexToUpdate !== undefined) {
-					const updatedBusiness = {
-						id: bId,
-						...req.body,
-					};
-					businesses.splice(businessIndexToUpdate, 1, updatedBusiness);
-					return res.status(201).send(updatedBusiness);
+				try {
+					const businessToDisplay = await Business.findById(bId);
+					if (businessToDisplay) {
+						return res.status(200).send(businessToDisplay);
+					}
+					return res.status(400).send(`No business with ID:${bId} found in DB`);
+				} catch (err) {
+					return res.status(400).send(err);
 				}
-				break;
-			default:
-				return res.status(405).send("Method not allowed");
-		}
 
-		if (businessToDisplay) {
-			return res.status(200).send(businessToDisplay);
+			case "PUT": {
+				try {
+					const updatedBusiness = await Business.findByIdAndUpdate(
+						bId,
+						req.body,
+						{ new: true },
+					);
+					return res.status(200).send(updatedBusiness);
+				} catch (err) {
+					return res.status(400).send(err);
+				}
+			}
 		}
 	},
 );
@@ -104,16 +149,12 @@ businessesRoutes.all(
 //Get bookings of specific business for specific date
 businessesRoutes.get(
 	`${rootPath}${bookingsPath}`,
-	(req: Request, res: Response) => {
-		const bId = Number(req.params.businessId);
-		const bookingDate = new Date(req.params.date);
+	async (req: Request, res: Response) => {
+		const bId = req.params.businessId;
 
-		if (isNaN(bId)) {
-			return res
-				.status(404)
-				.send(`No business found with id: ${req.params.businessId}`);
+		if (!mongoose.Types.ObjectId.isValid(bId)) {
+			return res.status(404).send(`No business with ID:${bId} found in DB`);
 		}
-
 		if (!req.params.date.match(DATE_REGEX)) {
 			return res
 				.status(400)
@@ -122,42 +163,37 @@ businessesRoutes.get(
 				);
 		}
 
-		if (Date.parse(req.params.date)) {
+		if (!Date.parse(req.params.date)) {
 			return res
 				.status(400)
 				.send(`Provided date ${req.params.date} is not a valid date.`);
 		}
 
-		const bookingDateYear = bookingDate.getFullYear();
-		const bookingDateMonthIndex = bookingDate.getMonth();
-		const bookingDateDay = bookingDate.getDate();
-		const dateString = bookingDate.toLocaleDateString("lt-LT");
+		const bookingDate = new Date(req.params.date);
 
-		const filteredBookingsByDate = bookings.filter((booking) => {
-			return (
-				booking.date.getFullYear() === bookingDateYear &&
-				booking.date.getMonth() === bookingDateMonthIndex &&
-				booking.date.getDate() === bookingDateDay
-			);
-		});
-		if (filteredBookingsByDate.length === 0) {
-			return res
-				.status(404)
-				.send(`No bookings were found on specified date: ${dateString}`);
-		}
-		const { record: businessRecord } = getObjectById(bId, businesses);
-
-		if (businessRecord) {
-			const filteredBookingsByBusiness = filteredBookingsByDate.filter(
-				(booking) => booking.businessId === bId,
-			);
-			if (filteredBookingsByBusiness.length > 0) {
-				return res.status(200).send(filteredBookingsByBusiness);
+		try {
+			const bookingsForBusiness = await Booking.find({
+				date: bookingDate,
+				businessId: bId,
+			});
+			if (bookingsForBusiness.length > 0) {
+				try {
+					const businessById = await Business.findById(bId);
+					if (businessById) {
+						return res.status(200).send({
+							date: bookingDate.toLocaleDateString("lt-LT"),
+							business: businessById.name,
+							bookings: bookingsForBusiness,
+						});
+					}
+					return res.status(404).send(`No business with ID:${bId} found in DB`);
+				} catch (err) {
+					return res.status(400).send(err);
+				}
 			}
+			return res.status(404).send("No bookings found in DB");
+		} catch (err) {
+			return res.status(400).send(err);
 		}
-
-		return res
-			.status(404)
-			.send(`No bookings were found for business ID: ${bId}, on ${dateString}`);
 	},
 );

@@ -36,6 +36,7 @@
     "@lib": "./src/lib",
     "@schemas": "./src/schemas",
     "@middleware": "./src/middleware",
+    "@models": "./src/models",
     "@constants": "./src/lib/constants.ts"
   }
 }

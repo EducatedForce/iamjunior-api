@@ -1,5 +1,9 @@
+import dotenv from "dotenv";
+
+dotenv.config();
+
 export const ROUTES = {
-	apiPrefix: "/api",
+	apiPrefix: process.env.DEFAULT_API_PREFIX ?? "/",
 	routes: {
 		categories: {
 			root: {
@@ -39,7 +43,7 @@ export const ROUTES = {
 					},
 					id: {
 						path: "/:id",
-						methods: ["DELETE"],
+						methods: ["GET", "DELETE"],
 					},
 				},
 			},
