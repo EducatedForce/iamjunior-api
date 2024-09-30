@@ -1,11 +1,8 @@
 import "module-alias/register.js";
 import express, { Express } from "express";
-import dotenv from "dotenv";
 import { ROUTES } from "@constants";
 import { routes } from "./routes";
-import { connectToDb, PORT } from "./database/Mongo.database.js";
-
-dotenv.config();
+import { connectToDb, PORT } from "./database/Mongo.database";
 
 const app: Express = express();
 

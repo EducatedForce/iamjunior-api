@@ -27,7 +27,6 @@ const validationOptions = {
 
 export const schemaValidator = (
 	path: string,
-	supportedMethods: string[],
 	useJoiError = true,
 ): RequestHandler => {
 	const schema = schemas[path];
@@ -37,13 +36,12 @@ export const schemaValidator = (
 	}
 
 	return (req, res, next) => {
+		const { error, value } = schema.validate(req.body, validationOptions);
 		const method = req.method;
 
-		if (method === "GET" || !supportedMethods.includes(method)) {
+		if (method === "GET") {
 			return next();
 		}
-
-		const { error, value } = schema.validate(req.body, validationOptions);
 
 		if (error) {
 			const customError: CustomError = {
