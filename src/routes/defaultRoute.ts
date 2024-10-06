@@ -1,5 +1,5 @@
 import { Request, Response, Router } from "express";
-import { generateRoutesList } from "@lib/generateRooutesList";
+import { generateRoutesList } from "@lib/generateRoutesList";
 import { ROUTES } from "@constants";
 
 export const defaultRoute = Router();

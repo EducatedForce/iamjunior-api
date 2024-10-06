@@ -10,7 +10,7 @@ interface Business {
 	name: string;
 	description: string;
 	address: string;
-	category: string;
+	categoryId: string;
 	contactPerson: string;
 	email: string;
 	images: { url: string }[];

@@ -32,7 +32,12 @@ export const ROUTES = {
 			root: {
 				path: "/categories",
 				methods: ["GET", "POST"],
-				subRoutes: {},
+				subRoutes: {
+					id: {
+						path: "/:id",
+						methods: ["GET", "PUT"],
+					},
+				},
 			},
 		},
 		businesses: {
