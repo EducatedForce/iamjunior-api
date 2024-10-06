@@ -1,0 +1,22 @@
+{
+  "arrowParens": "always",
+  "bracketSpacing": true,
+  "insertPragma": false,
+  "printWidth": 80,
+  "proseWrap": "preserve",
+  "quoteProps": "as-needed",
+  "requirePragma": false,
+  "semi": true,
+  "tabWidth": 2,
+  "useTabs": true,
+  "endOfLine": "auto",
+  "trailingComma": "all",
+  "overrides": [
+    {
+      "files": ".prettierrc",
+      "options": {
+        "parser": "typescript"
+      }
+    }
+  ]
+}

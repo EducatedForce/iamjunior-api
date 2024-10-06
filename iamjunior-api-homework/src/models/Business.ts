@@ -21,7 +21,7 @@ const BusinessSchema = new mongoose.Schema({
 		type: String,
 		required: true,
 	},
-	categoryId: {
+	category: {
 		type: Schema.Types.ObjectId,
 		ref: "Category",
 		required: true,

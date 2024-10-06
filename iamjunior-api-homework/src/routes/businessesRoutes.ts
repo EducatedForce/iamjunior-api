@@ -51,7 +51,7 @@ businessesRoutes.all(
 					}
 					const newBusiness = new Business({
 						...req.body,
-						categoryId: categoryInDB._id,
+						category: categoryInDB._id,
 					});
 					try {
 						const savedBusiness = await newBusiness.save();
@@ -74,11 +74,11 @@ businessesRoutes.get(
 		const { category } = req.params;
 		try {
 			const categoryInDb = await Category.findOne({
-				name: { $regex: new RegExp(`${deSlugify(category)}`), $options: "i" },
+				name: { $regex: new RegExp(`^${deSlugify(category)}$`), $options: "i" },
 			});
 			try {
 				const businessesInDb = await Business.find({
-					categoryId: categoryInDb?._id,
+					category: categoryInDb?._id,
 				});
 				if (businessesInDb.length > 0) {
 					return res.status(200).send({

@@ -1,0 +1,52 @@
+{
+  "exclude": [
+    "node_modules",
+    "dist",
+    "src/**/*.test.ts"
+  ],
+  "include": [
+    "src/**/*",
+    "src/types/index.d.ts"
+  ],
+  "ts-node": {
+    "files": true,
+    "transpileOnly": true
+  },
+  "compilerOptions": {
+    "types": [
+      "node",
+      "express"
+    ],
+    "target": "es2016",
+    "module": "commonjs",
+    "moduleResolution": "Node",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "skipLibCheck": true,
+    "outDir": "./dist",
+    "typeRoots": [
+      "node_modules/@types/",
+      "./src/types/index.d.ts"
+    ],
+    "baseUrl": "./src",
+    "paths": {
+      "@lib/*": [
+        "./lib/*"
+      ],
+      "@schemas/*": [
+        "./schemas/*"
+      ],
+      "@middleware/*": [
+        "./middleware/*"
+      ],
+      "@models/*": [
+        "./models/*"
+      ],
+      "@constants": [
+        "./lib/constants.ts"
+      ]
+    }
+  }
+}
