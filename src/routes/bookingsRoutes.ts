@@ -5,9 +5,11 @@ import { Booking, BookingSchemaType } from "@models/Bookings";
 import mongoose from "mongoose";
 import { methodMiddleware } from "@middleware/methodMiddleware";
 import { Business } from "@models/Business";
+import { Category } from "@models/Category";
 
 type ModifiedBooking = BookingSchemaType & {
 	businessName: string;
+	categoryName: string;
 };
 
 export const bookingsRoutes = Router();
@@ -32,8 +34,10 @@ bookingsRoutes.all(
 						const modifiedBookings = await Promise.all(
 							bookings.map(async (booking) => {
 								const business = await Business.findById(booking.businessId);
+								const category = await Category.findById(business?.category);
 								return {
 									...booking.toObject(),
+									categoryName: category?.name,
 									businessName: business?.name,
 								} as ModifiedBooking;
 							}),
@@ -83,9 +87,11 @@ bookingsRoutes.get(
 				const modifiedBookings = await Promise.all(
 					bookingsByEmail.map(async (booking) => {
 						const business = await Business.findById(booking.businessId);
+						const category = await Category.findById(business?.category);
 						return {
 							...booking.toObject(),
 							businessName: business?.name,
+							categoryName: category?.name,
 						} as ModifiedBooking;
 					}),
 				);
@@ -124,9 +130,11 @@ bookingsRoutes.all(
 					const bookingById = await Booking.findById(bookingId);
 					if (bookingById) {
 						const business = await Business.findById(bookingById.businessId);
+						const category = await Category.findById(business?.category);
 						return res.status(200).send({
 							...bookingById.toObject(),
 							businessName: business?.name,
+							categoryName: category?.name,
 						} as ModifiedBooking);
 					}
 					return res
