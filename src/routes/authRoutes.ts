@@ -21,8 +21,15 @@ authRoutes.post(
 			if (!user || !(await user.isCorrectPassword(password))) {
 				return res.status(401).send({ message: "Incorrect email or password" });
 			}
-			const token = generateJwtToken({ id: user._id });
-			return res.status(200).send({ token, user });
+			const token = generateJwtToken({
+				_id: user._id,
+				userName: user.userName,
+				email: user.email,
+			});
+			return res.status(200).send({
+				message: "Login successful",
+				token: token,
+			});
 		} catch (err) {
 			return res.status(400).send(err);
 		}
@@ -46,7 +53,15 @@ authRoutes.post(
 			}
 			const newUser = new User(user);
 			await newUser.save();
-			return res.status(201).json({ message: "User registered successfully" });
+			const token = generateJwtToken({
+				_id: newUser._id,
+				userName: newUser.userName,
+				email: newUser.email,
+			});
+			return res.status(201).json({
+				message: "User registered successfully",
+				token: token,
+			});
 		} catch (err) {
 			return res.status(500).send({
 				message: "Error registering new user",

@@ -6,8 +6,7 @@ dotenv.config();
 
 export interface IUser extends Document {
 	_id: mongoose.Types.ObjectId;
-	name: string;
-	age?: number;
+	userName: string;
 	email: string;
 	password: string;
 
@@ -16,8 +15,7 @@ export interface IUser extends Document {
 
 export const userSchema = new Schema<IUser>(
 	{
-		name: { type: String, required: true },
-		age: { type: Number },
+		userName: { type: String, required: true },
 		email: { type: String, required: true },
 		password: { type: String, required: true },
 	},

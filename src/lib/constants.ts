@@ -90,5 +90,5 @@ export const DATE_REGEX = new RegExp(
 export const TIME_REGEX = new RegExp("^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$");
 
 export const PASSWORD_REGEX = new RegExp(
-	"^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$",
+	"^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$",
 );

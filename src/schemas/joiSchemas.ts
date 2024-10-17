@@ -34,12 +34,11 @@ const bookingSchema = Joi.object().keys({
 });
 
 const userSchema = Joi.object().keys({
-	name: Joi.string().required(),
-	age: Joi.number(),
+	userName: Joi.string().required(),
 	email: Joi.string().required(),
 	password: Joi.string().pattern(PASSWORD_REGEX).required().messages({
 		"string.pattern.base":
-			"Password must be be at least 8 characters long and have at least: 1 lower case letter, 1 upper case letter, 1 number and 1 special character",
+			"Password must be be at least 8 characters long and have at least: 1 lower case letter, 1 upper case letter and 1 number",
 	}),
 });
 
