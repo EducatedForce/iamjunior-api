@@ -1,4 +1,4 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Document, InferSchemaType, Schema } from "mongoose";
 import { EMAIL_REGEX } from "@constants";
 
 const ImageSchema = new mongoose.Schema({
@@ -41,4 +41,9 @@ const BusinessSchema = new mongoose.Schema({
 	},
 });
 
-export const Business = mongoose.model("Business", BusinessSchema);
+export type BusinessSchemaType = InferSchemaType<typeof BusinessSchema>;
+
+export const Business = mongoose.model<BusinessSchemaType & Document>(
+	"Business",
+	BusinessSchema,
+);

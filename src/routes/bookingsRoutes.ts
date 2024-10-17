@@ -1,9 +1,14 @@
 import { Request, Response, Router } from "express";
 import { EMAIL_REGEX, ROUTES } from "@constants";
 import { schemaValidator } from "@middleware/schemaValidator";
-import { Booking } from "@models/Bookings";
+import { Booking, BookingSchemaType } from "@models/Bookings";
 import mongoose from "mongoose";
 import { methodMiddleware } from "@middleware/methodMiddleware";
+import { Business } from "@models/Business";
+
+type ModifiedBooking = BookingSchemaType & {
+	businessName: string;
+};
 
 export const bookingsRoutes = Router();
 
@@ -21,11 +26,28 @@ bookingsRoutes.all(
 		//Depending on request method display all bookings or create new one in DB
 		switch (req.method) {
 			case "GET": {
-				const bookings = await Booking.find();
-				if (bookings.length > 0) {
-					return res.status(200).send(bookings);
+				try {
+					const bookings = await Booking.find();
+					if (bookings.length > 0) {
+						const modifiedBookings = await Promise.all(
+							bookings.map(async (booking) => {
+								const business = await Business.findById(booking.businessId);
+								return {
+									...booking.toObject(),
+									businessName: business?.name,
+								} as ModifiedBooking;
+							}),
+						);
+						return res.status(200).json(modifiedBookings);
+					} else {
+						return res.status(404).send({ message: "No bookings found in DB" });
+					}
+				} catch (err) {
+					return res.status(500).send({
+						message: "Error fetching bookings",
+						error: err,
+					});
 				}
-				return res.status(404).send({ message: "No bookings found in DB" });
 			}
 			case "POST": {
 				try {
@@ -55,14 +77,29 @@ bookingsRoutes.get(
 				.send({ message: "No or incorrect email provided" });
 		}
 
-		const bookingsByEmail = await Booking.find({ userEmail: email });
-
-		if (bookingsByEmail.length > 0) {
-			return res.status(200).send(bookingsByEmail);
-		} else {
-			return res
-				.status(404)
-				.send({ message: `No bookings in database with user email: ${email}` });
+		try {
+			const bookingsByEmail = await Booking.find({ userEmail: email });
+			if (bookingsByEmail.length > 0) {
+				const modifiedBookings = await Promise.all(
+					bookingsByEmail.map(async (booking) => {
+						const business = await Business.findById(booking.businessId);
+						return {
+							...booking.toObject(),
+							businessName: business?.name,
+						} as ModifiedBooking;
+					}),
+				);
+				return res.status(200).send(modifiedBookings);
+			} else {
+				return res.status(404).send({
+					message: `No bookings in database with user email: ${email}`,
+				});
+			}
+		} catch (err) {
+			return res.status(500).send({
+				message: "Error fetching bookings",
+				error: err,
+			});
 		}
 	},
 );
@@ -86,13 +123,20 @@ bookingsRoutes.all(
 				try {
 					const bookingById = await Booking.findById(bookingId);
 					if (bookingById) {
-						return res.status(200).send(bookingById);
+						const business = await Business.findById(bookingById.businessId);
+						return res.status(200).send({
+							...bookingById.toObject(),
+							businessName: business?.name,
+						} as ModifiedBooking);
 					}
 					return res
 						.status(404)
 						.send({ message: `No booking with ID:${bookingId} found in DB` });
 				} catch (err) {
-					return res.status(400).send(err);
+					return res.status(500).send({
+						message: "Error fetching booking",
+						error: err,
+					});
 				}
 			}
 			case "DELETE": {
@@ -107,7 +151,10 @@ bookingsRoutes.all(
 						.status(404)
 						.send({ message: `No booking with ID:${bookingId} found in DB` });
 				} catch (err) {
-					return res.status(400).send(err);
+					return res.status(500).send({
+						message: "Error deleting booking",
+						error: err,
+					});
 				}
 			}
 		}

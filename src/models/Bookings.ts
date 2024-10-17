@@ -1,4 +1,4 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { InferSchemaType, Schema, Document } from "mongoose";
 import { EMAIL_REGEX, TIME_REGEX } from "@constants";
 
 const BookingSchema = new mongoose.Schema({
@@ -31,4 +31,9 @@ const BookingSchema = new mongoose.Schema({
 	},
 });
 
-export const Booking = mongoose.model("Booking", BookingSchema);
+export type BookingSchemaType = InferSchemaType<typeof BookingSchema>;
+
+export const Booking = mongoose.model<BookingSchemaType & Document>(
+	"Booking",
+	BookingSchema,
+);
